@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Number Changer</title>
+  <title>Text Changer</title>
+  <style>
+    body { width: 300px; padding: 10px; }
+    input, button { margin: 5px 0; width: 100%; }
+    #disclaimer { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <input type="text" id="selector" placeholder="CSS Selector">
-  <input type="text" id="newValue" placeholder="New Value">
-  <button id="changeBtn">Change Number</button>
+  <p id="disclaimer">Warning: This extension is for educational purposes only. Changing website content may be unethical or illegal.</p>
+  <input type="text" id="selector" placeholder="CSS Selector (e.g., #price, .username)">
+  <input type="text" id="newText" placeholder="New Text">
+  <button id="changeBtn">Change Text</button>
   <script src="popup.js"></script>
 </body>
 </html>
