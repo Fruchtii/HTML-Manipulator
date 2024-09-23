@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Number Changer",
+  "version": "1.0",
+  "description": "Allows changing specific numbers on a webpage",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
