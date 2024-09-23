@@ -1,23 +1,18 @@
 document.getElementById('changeBtn').addEventListener('click', () => {
   const selector = document.getElementById('selector').value;
-  const newText = document.getElementById('newText').value;
-
-  if (!selector || !newText) {
-    alert('Please fill in both fields.');
-    return;
-  }
+  const newValue = document.getElementById('newValue').value;
 
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, {
-      action: "changeText",
+      action: "changeNumber",
       selector: selector,
-      newText: newText
+      newValue: newValue
     });
 
     // Save the change
     chrome.storage.local.get(['changes'], function(result) {
       let changes = result.changes || [];
-      changes.push({selector: selector, newText: newText});
+      changes.push({selector: selector, newValue: newValue});
       chrome.storage.local.set({changes: changes});
     });
   });
