@@ -1,34 +1,39 @@
 let selectedElement = null;
 
+document.addEventListener('mousedown', function(event) {
+  if (event.button === 2) { // Right click
+    selectedElement = event.target;
+  }
+});
+
 function changeNumber(element, newValue) {
   if (element) {
     element.textContent = newValue;
+    
+    // Save the change
+    chrome.storage.local.get(['changes'], function(result) {
+      let changes = result.changes || [];
+      changes.push({
+        selector: uniqueSelector(element),
+        newValue: newValue
+      });
+      chrome.storage.local.set({changes: changes});
+    });
   }
 }
 
-function enableSelection() {
-  document.body.style.cursor = 'crosshair';
-  document.addEventListener('click', elementClickHandler);
-}
-
-function disableSelection() {
-  document.body.style.cursor = 'default';
-  document.removeEventListener('click', elementClickHandler);
-}
-
-function elementClickHandler(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  selectedElement = e.target;
-  chrome.runtime.sendMessage({action: "elementSelected", text: selectedElement.textContent});
-  disableSelection();
+function uniqueSelector(element) {
+  if (element.id) return '#' + element.id;
+  if (element.className) return '.' + element.className.split(' ').join('.');
+  return element.tagName.toLowerCase();
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "startSelection") {
-    enableSelection();
-  } else if (request.action === "changeNumber") {
-    changeNumber(selectedElement, request.newValue);
+  if (request.action === "promptChange") {
+    const newValue = prompt("Enter new value:", request.selection);
+    if (newValue !== null) {
+      changeNumber(selectedElement, newValue);
+    }
   }
 });
 
@@ -36,8 +41,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.storage.local.get(['changes'], function(result) {
   if (result.changes) {
     result.changes.forEach(change => {
-      const element = document.evaluate(change.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-      changeNumber(element, change.newValue);
+      const element = document.querySelector(change.selector);
+      if (element) {
+        element.textContent = change.newValue;
+      }
     });
   }
 });
